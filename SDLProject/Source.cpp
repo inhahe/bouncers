@@ -3,7 +3,6 @@ todo:
 save and load sets of velocities
 key to only change colors
 let the user resize the window as it's going
-fix the bug where some of the rgb color components are way too large
 */
 
 #include <stdlib.h>
@@ -26,9 +25,7 @@ void init_bouncer(int i, int w, int h)
 	bouncers[i].r = rand() % 256;
 	bouncers[i].g = rand() % 256;
 	bouncers[i].b = rand() % 256;
-
-	//printf("%d %d %d\n", bouncers[i].r, bouncers[i].g, bouncers[i].b);
-
+	//bouncers[i].a = rand() % 256;
 	bouncers[i].a = 255;
 	bouncers[i].x = rand() / float(RAND_MAX) * w;
 	bouncers[i].y = rand() / float(RAND_MAX) * h;
@@ -79,10 +76,7 @@ int main(int argc, char * argv[]) {
 					bouncers[i].ys = -bouncers[i].ys;
 				}
 				SDL_SetRenderDrawColor(renderer, bouncers[i].r, bouncers[i].g, bouncers[i].b, bouncers[i].a);
-				//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 				SDL_RenderDrawPoint(renderer, int(bouncers[i].x), int(bouncers[i].y));
-				//printf("%d %d %d %d", bouncers[i].r, bouncers[i].g, bouncers[i].b, bouncers[i].a);
-				//printf("%d, %d\n", int(bouncers[i].x), int(bouncers[i].y));
 			}
 		}
 		SDL_RenderPresent(renderer);
@@ -100,6 +94,9 @@ int main(int argc, char * argv[]) {
 			//		break;
 				case SDLK_r: //reset
 					init_bouncers(num_bouncers, dm.w, dm.h);
+					SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+					SDL_RenderClear(renderer);
+					SDL_RenderPresent(renderer);
 					break;
 				case SDLK_RIGHTBRACKET:
 					init_bouncer(num_bouncers, dm.w, dm.h);

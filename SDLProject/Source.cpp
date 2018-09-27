@@ -3,6 +3,7 @@ todo:
 save and load sets of velocities
 key to only change colors
 let the user resize the window as it's going
+fix the bug where some of the rgb color components are way too large
 */
 
 #include <stdlib.h>

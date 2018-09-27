@@ -9,3 +9,4 @@ keys in the c++ version:
 * esc: quit
 * r: re-randomize all the bouncers
   
+You'll probably have to cycle through a few sets (pressing r) before you find a good one.

@@ -1,0 +1,322 @@
+/*
+#include <iostream>
+#include <SDL.h>
+using namespace std;
+
+int main(int argc, char * argv[])
+{
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	{
+		cout << "SDL initialization failed. SDL Error: " << SDL_GetError();
+	}
+	else
+	{
+		cout << "SDL initialization succeeded!";
+	}
+
+	cin.get();
+	return 0;
+}		
+*/
+
+// Using SDL2's SDL_GetCurrentDisplayMode()
+
+/*
+#include "SDL.h"
+#include <stdio.h>
+
+
+/*
+int main(int argc, char* argv[])
+
+{
+
+
+	//int i;
+
+	// Declare display mode structure to be filled in.
+	SDL_DisplayMode dm;
+	SDL_Window *window;                    // Declare a pointer
+	SDL_Renderer *renderer = NULL;
+
+	SDL_Init(SDL_INIT_VIDEO);
+
+	// Get current display mode of all displays.
+	//for (i = 0; i < SDL_GetNumVideoDisplays(); ++i) {
+
+	//	int should_be_zero = SDL_GetCurrentDisplayMode(0, &dm);
+
+//		if (should_be_zero != 0)
+			// In case of error...
+	//		SDL_Log("Could not get display mode for video display #%d: %s", 0, SDL_GetError());
+	if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+		SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+		return 1;
+	}
+
+	else
+			// On success, print the current display mode.
+	SDL_Log("Desktop display mode is %dx%dpx @ %dhz.", dm.w, dm.h, dm.refresh_rate);
+
+
+
+	window = SDL_CreateWindow(
+		"An SDL2 window",                  // window title
+		SDL_WINDOWPOS_UNDEFINED,           // initial x position
+		SDL_WINDOWPOS_UNDEFINED,           // initial y position
+		dm.w,                               // width, in pixels
+		dm.h,                               // height, in pixels
+		//SDL_WINDOW_OPENGL |
+	    SDL_WINDOW_FULLSCREEN_DESKTOP             
+	);
+
+	// Check that the window was successfully created
+	if (window == NULL) {
+		// In the case that the window could not be made...
+		printf("Could not create window: %s\n", SDL_GetError());
+		return 1;
+	
+	
+	SDL_Surface *screen;
+	
+	Initialize the SDL library 
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		fprintf(stderr,
+			"Couldn't initialize SDL: %s\n", SDL_GetError());
+		exit(1);
+	}
+
+	/* Clean up on exit */
+	//atexit(SDL_Quit);
+
+	/*
+	 * Initialize the display in a 640x480 8-bit palettized mode,
+	 * requesting a software surface
+	
+	screen = SDL_SetVideoMode(640, 480, 8, SDL_SWSURFACE);
+	if (screen == NULL) {
+		fprintf(stderr, "Couldn't set 640x480x8 video mode: %s\n",
+			SDL_GetError());
+		exit(1);
+	}
+
+
+	
+
+
+}
+*/
+
+//#include "stdafx.h"
+//#include "afxwin.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <SDL.h>
+//#include <memory.h>
+
+#define MAX_BOUNCERS 1000
+
+struct Bouncer 
+{
+	int r, g, b, a;
+	float x, y, xs, ys;
+};
+
+Bouncer bouncers[MAX_BOUNCERS];
+
+void init_bouncer(int i, int w, int h)
+{
+	bouncers[i].r = rand() % 256;
+	bouncers[i].g = rand() % 256;
+	bouncers[i].b = rand() % 256;
+
+	//printf("%d %d %d\n", bouncers[i].r, bouncers[i].g, bouncers[i].b);
+
+	bouncers[i].a = 255;
+	bouncers[i].x = rand() / float(RAND_MAX) * w;
+	bouncers[i].y = rand() / float(RAND_MAX) * h;
+	bouncers[i].xs = rand() / float(RAND_MAX) * 2 - 1;
+	bouncers[i].ys = rand() / float(RAND_MAX) * 2 - 1;
+}
+
+void init_bouncers(int num_bouncers, int w, int h)
+{
+	for (int i = 0; i < num_bouncers; i++)
+	{
+		init_bouncer(i, w, h);
+	}
+}
+
+int main(int argc, char * argv[]) {
+	SDL_Event event;
+	SDL_Renderer *renderer;
+	SDL_Window *window;
+	SDL_DisplayMode dm;
+	int num_bouncers = 5;
+	//memset(bouncers, 0, num_bouncers * sizeof(bouncers[0]));
+	
+	SDL_Init(SDL_INIT_VIDEO);
+
+	if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+		SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+		return 1;
+	}
+
+	init_bouncers(num_bouncers, dm.w, dm.h);
+
+	SDL_CreateWindowAndRenderer(dm.w, dm.h, 0, &window, &renderer);
+	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	//SDL_RenderClear(renderer);
+	//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    //SDL_RenderDrawPoint(renderer, dm.w/2, dm.h/2);
+	SDL_RenderPresent(renderer);
+	while (1) {
+//		if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
+//			break;
+		for (int i = 0; i < num_bouncers; i++)
+		{
+			bouncers[i].x += bouncers[i].xs;
+			if (bouncers[i].x >= dm.w || bouncers[i].x < 0) {
+				bouncers[i].x -= bouncers[i].xs;
+				bouncers[i].xs = -bouncers[i].xs;
+			}
+			bouncers[i].y += bouncers[i].ys;
+			if (bouncers[i].y >= dm.h || bouncers[i].y < 0) {
+				bouncers[i].y -= bouncers[i].ys;
+				bouncers[i].ys = -bouncers[i].ys;
+			}
+			//SDL_SetRenderDrawColor(renderer, bouncers[i].r % 256, bouncers[i].g % 256, bouncers[i].b % 256, 255);
+			SDL_SetRenderDrawColor(renderer, bouncers[i].r, bouncers[i].g, bouncers[i].b, 255bouncers[i].a);
+			SDL_RenderDrawPoint(renderer, int(bouncers[i].x), int(bouncers[i].y));
+
+	//		cout << int(bouncers[i].x) << " " << int(bouncers[i].y) << endl;
+			printf("%d %d %d %d", bouncers[i].r, bouncers[i].g, bouncers[i].b, bouncers[i].a);
+			//printf("%d, %d\n", int(bouncers[i].x), int(bouncers[i].y));
+
+		}
+		if (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_KEYUP:
+				switch (event.key.keysym.sym)
+				{
+			//	case SDLK_f: 
+			//		SDL_RestoreWindow(window); //Incase it's maximized...
+			//		SDL_SetWindowSize(window, dm.w, dm.h);
+			//		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+			//		break;
+				case SDLK_RIGHTBRACKET:
+					init_bouncer(num_bouncers, dm.w, dm.h);
+					num_bouncers++;
+					break;
+				case SDLK_ESCAPE:
+					SDL_DestroyRenderer(renderer);
+					SDL_DestroyWindow(window);
+					SDL_Quit();
+					return EXIT_SUCCESS;
+				}
+				break;
+			}
+		}
+	}
+	//SDL_DestroyRenderer(renderer);
+	//SDL_DestroyWindow(window);
+	//SDL_Quit();
+	//return EXIT_SUCCESS;
+}
+
+
+
+
+
+/*
+//	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	
+	// Code to set a yellow pixel at the center of the screen 
+
+	int x, y;
+	Uint32 yellow;
+
+	/* Map the color yellow to this display (R=0xff, G=0xFF, B=0x00)
+	//   Note:  If the display is palettized, you must set the palette first.
+	
+	yellow = SDL_MapRGB(screen->format, 0xff, 0xff, 0x00);
+
+	x = screen->w / 2;
+	y = screen->h / 2;
+
+	// Lock the screen for direct access to the pixels 
+	if (SDL_MUSTLOCK(screen)) {
+		if (SDL_LockSurface(screen) < 0) {
+			fprintf(stderr, "Can't lock screen: %s\n", SDL_GetError());
+			return;
+		}
+	}
+
+	putpixel(screen, x, y, yellow);
+
+	if (SDL_MUSTLOCK(screen)) {
+		SDL_UnlockSurface(screen);
+	}
+	// Update just the part of the display that we've changed 
+	SDL_UpdateRect(screen, x, y, 1, 1);
+
+	return;
+	
+	// The window is open: could enter program loop here (see SDL_PollEvent())
+
+	SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
+
+	// Close and destroy the window
+	SDL_DestroyWindow(window);
+
+
+
+	// Clean up and exit the program.
+	SDL_Quit();
+	return 0;
+
+}
+
+/*
+ * Set the pixel at (x, y) to the given value
+ * NOTE: The surface must be locked before calling this!
+ */
+
+	
+/*
+void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
+{
+	int bpp = surface->format->BytesPerPixel;
+	// Here p is the address to the pixel we want to set 
+	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+	switch (bpp) {
+	case 1:
+		*p = pixel;
+		break;
+
+	case 2:
+		*(Uint16 *)p = pixel;
+		break;
+
+	case 3:
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+			p[0] = (pixel >> 16) & 0xff;
+			p[1] = (pixel >> 8) & 0xff;
+			p[2] = pixel & 0xff;
+		}
+		else {
+			p[0] = pixel & 0xff;
+			p[1] = (pixel >> 8) & 0xff;
+			p[2] = (pixel >> 16) & 0xff;
+		}
+		break;
+
+	case 4:
+		*(Uint32 *)p = pixel;
+		break;
+	}
+}
+*/
